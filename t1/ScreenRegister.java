@@ -3,6 +3,9 @@ package test.yubei.com.app.t1;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
+
+import javax.swing.JOptionPane;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -12,6 +15,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+
+import test.yubei.com.app.api.*;
+import test.yubei.com.app.api.Error;
 
 public class ScreenRegister {
 
@@ -50,6 +56,23 @@ public class ScreenRegister {
 			@Override
 			public void mouseUp(MouseEvent e) {
 				btn_NORMAL(b,s);
+				String user = text_user.getText();
+				String pswd = text_pswd.getText();
+				String confirm_pswd = text_confirm_pswd.getText();
+				String mail = text_mail.getText();
+				if(!confirm_pswd.equals(pswd)) {
+					JOptionPane.showMessageDialog(null, "两次密码输入不一致！","提示", JOptionPane.WARNING_MESSAGE);
+				}else if(mail==""){
+					JOptionPane.showMessageDialog(null, "邮箱地址不能为空！","提示", JOptionPane.WARNING_MESSAGE);
+				}else {
+					String api = "https://api.mp3.h-00.com/v1/user/regisitor?username="+user+"&password="+pswd+"&email="+mail;
+					Error err = DoPost.doPost(api);
+					if(err.errorCode==0) {
+						JOptionPane.showMessageDialog(null, "已发送邮件至您的邮箱！请在1个小时内完成验证！","提示", JOptionPane.WARNING_MESSAGE);
+					}else {
+						JOptionPane.showMessageDialog(null, err.errorMsg,"提示", JOptionPane.WARNING_MESSAGE);
+					}
+				}
 			}
 		});
 		b.addMouseTrackListener(new MouseTrackAdapter() {

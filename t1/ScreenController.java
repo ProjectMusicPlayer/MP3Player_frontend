@@ -1,5 +1,7 @@
 package test.yubei.com.app.t1;
 
+import java.io.IOException;
+
 public class ScreenController {
 
 	public static boolean f_list = false;
@@ -7,6 +9,7 @@ public class ScreenController {
 	public static boolean f_aboutus = false;
 	public static boolean f_regisitor = false;
 	public static boolean f_forget = false;
+	public static boolean f_pswd = false;
 	
 	
 	public static void init() {
@@ -16,7 +19,7 @@ public class ScreenController {
 		//ScreenLogin.main(null);
 	}
 	
-	public static void login(ScreenLogin s) {
+	public static void login(ScreenLogin s,String user) {
 		s.end();
 		try {
 			ScreenPlayer.main(null);
@@ -77,6 +80,27 @@ public class ScreenController {
 		if(!f_forget) {
 			f_forget = true;
 			ScreenForget.main(null);
+		}
+	}
+	
+	public static void pswd() {
+		if(!f_pswd) {
+			f_pswd = true;
+			ScreenPswd.main(null);
+		}
+	}
+	
+	public static void openWebsite(String url) {
+		if(java.awt.Desktop.isDesktopSupported()) {
+			java.net.URI uri = java.net.URI.create(url);
+			java.awt.Desktop dp = java.awt.Desktop.getDesktop();
+			if(dp.isSupported(java.awt.Desktop.Action.BROWSE)) {
+				try {
+					dp.browse(uri);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 //	

@@ -82,13 +82,18 @@ public class ScreenPlayer {
 		Menu_main_user.setMenu(menu_1);
 		
 		MenuItem Menu_change = new MenuItem(menu_1, SWT.NONE);
-		Menu_change.setText("\u4FEE\u6539\u4FE1\u606F");
+		Menu_change.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ScreenController.pswd();
+			}
+		});
+		Menu_change.setText("\u4FEE\u6539\u5BC6\u7801");
 		
 		MenuItem Menu_signout = new MenuItem(menu_1, SWT.NONE);
 		Menu_signout.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				
 			}
 		});
 		Menu_signout.setText("\u6CE8\u9500");
@@ -124,6 +129,12 @@ public class ScreenPlayer {
 		Menu_main_more.setMenu(menu_3);
 		
 		MenuItem Menu_web = new MenuItem(menu_3, SWT.NONE);
+		Menu_web.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ScreenController.openWebsite("https://www.baidu.com");
+			}
+		});
 		Menu_web.setText("\u5B98\u7F51");
 		
 		MenuItem Menu_aboutUs = new MenuItem(menu_3, SWT.NONE);

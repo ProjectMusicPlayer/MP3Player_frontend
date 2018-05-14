@@ -3,6 +3,11 @@ package test.yubei.com.app.t1;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Button;
+
+import java.awt.HeadlessException;
+
+import javax.swing.JOptionPane;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -12,6 +17,11 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.json.JSONException;
+
+import net.sf.json.JSONObject;
+import test.yubei.com.app.api.*;
+import test.yubei.com.app.api.Error;
 
 public class ScreenLogin {
 
@@ -100,6 +110,31 @@ public class ScreenLogin {
 		Label_musicplayer.setText("MusicPlayer");
 		
 		Label Label_btn_login = new Label(MainLogin, SWT.NONE);
+		Label_btn_login.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				String user = text_user.getText();
+				String pswd = text_pswd.getText();
+				String api = "https://api.mp3.h-00.com/v1/user/token?username="+user+"&password="+pswd;
+				try {
+					org.json.JSONObject Json = DoPost.doPostJ(api);
+					if(Json.getInt("error")==0) {
+						String token = Json.getString("token");
+						User.token = token;
+						User.username = user;
+						openMainScreen(user);
+					}else {
+						JOptionPane.showMessageDialog(null, Json.getString("msg"),"提示", JOptionPane.WARNING_MESSAGE);
+					}
+				} catch (HeadlessException e1) {
+					// TODO 自动生成的 catch 块
+					e1.printStackTrace();
+				} catch (JSONException e1) {
+					// TODO 自动生成的 catch 块
+					e1.printStackTrace();
+				}
+			}
+		});
 		Label_btn_login.setBackground(SWTResourceManager.getColor(255, 204, 204));
 		Label_btn_login.setBounds(89, 281, 100, 36);
 		Label_btn_login.setText("\u767B\u5F55");
@@ -135,7 +170,7 @@ public class ScreenLogin {
 	}
 	
 	public void openMainScreen(String username) {
-		ScreenController.login(this);
+		ScreenController.login(this,username);
 	}
 	
 	public void end() {
