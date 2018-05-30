@@ -2,6 +2,8 @@ package test.yubei.com.app.t1;
 
 import java.io.IOException;
 
+import org.eclipse.swt.widgets.List;
+
 public class ScreenController {
 
 	public static boolean f_list = false;
@@ -13,10 +15,8 @@ public class ScreenController {
 	
 	
 	public static void init() {
-		//debug模式，开debug窗体
-		ScreenDebug.main(null);
 		//正常模式，开login
-		//ScreenLogin.main(null);
+		ScreenLogin.main(null);
 	}
 	
 	public static void login(ScreenLogin s,String user) {
@@ -36,10 +36,10 @@ public class ScreenController {
 		}
 	}
 	
-	public static void list() {
+	public static void list(List s) {
 		if(!f_list) {
 			f_list = true;
-			ScreenList.main(null);
+			ScreenList.main(s);
 		}
 
 	}
@@ -105,7 +105,7 @@ public class ScreenController {
 	}
 //	
 	public static void signout() {
-		
+		ScreenLogin.main(null);
 	}
 	
 	public static void closeAll() {

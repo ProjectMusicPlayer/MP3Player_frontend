@@ -32,60 +32,10 @@ public class ScreenRegister {
 	 * Launch the application.
 	 * @param args
 	 */
-	
-	public String baseImgAddr = new String("C:\\Users\\Adminisator\\Desktop\\\u8C01\u4E5F\u4E0D\u80FD\u963B\u6B62\u6211\u5B66\u4E60\\java\\1\\APPTEST2\\img\\mp3\\ButtonTest\\");
 	private Label Label_btn_register;
 	private Label Label_user;
 	
-	public void btn_GOPASS(Label b,String s) {
-		b.setImage(SWTResourceManager.getImage(baseImgAddr+s+"_GOPASS.jpg"));
-	}
-	public void btn_ACTIVE(Label b,String s) {
-		b.setImage(SWTResourceManager.getImage(baseImgAddr+s+"_ACTIVE.jpg"));
-	}
-	public void btn_NORMAL(Label b,String s) {
-		b.setImage(SWTResourceManager.getImage(baseImgAddr+s+"_NORMAL.jpg"));
-	}
-	
-	public void btn_listen(Label b,String s) {
-		btn_NORMAL(b,s);
-		b.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseDown(MouseEvent e) {
-				btn_ACTIVE(b,s);}
-			@Override
-			public void mouseUp(MouseEvent e) {
-				btn_NORMAL(b,s);
-				String user = text_user.getText();
-				String pswd = text_pswd.getText();
-				String confirm_pswd = text_confirm_pswd.getText();
-				String mail = text_mail.getText();
-				if(!confirm_pswd.equals(pswd)) {
-					JOptionPane.showMessageDialog(null, "两次密码输入不一致！","提示", JOptionPane.WARNING_MESSAGE);
-				}else if(mail==""){
-					JOptionPane.showMessageDialog(null, "邮箱地址不能为空！","提示", JOptionPane.WARNING_MESSAGE);
-				}else {
-					String api = "https://api.mp3.h-00.com/v1/user/regisitor?username="+user+"&password="+pswd+"&email="+mail;
-					Error err = DoPost.doPost(api);
-					if(err.errorCode==0) {
-						JOptionPane.showMessageDialog(null, "已发送邮件至您的邮箱！请在1个小时内完成验证！","提示", JOptionPane.WARNING_MESSAGE);
-					}else {
-						JOptionPane.showMessageDialog(null, err.errorMsg,"提示", JOptionPane.WARNING_MESSAGE);
-					}
-				}
-			}
-		});
-		b.addMouseTrackListener(new MouseTrackAdapter() {
-			@Override
-			public void mouseEnter(MouseEvent e) {
-				btn_GOPASS(b,s);
-			}
-			public void mouseExit(MouseEvent e) {
-				btn_NORMAL(b,s);
-			}
-		});		
-	}
-	
+
 	public static void main(String[] args) {
 		try {
 			ScreenRegister window = new ScreenRegister();
@@ -173,9 +123,31 @@ public class ScreenRegister {
 		Label_register.setText("\u6CE8\u518C");
 		
 		Label_btn_register = new Label(MainRegister, SWT.NONE);
+		Label_btn_register.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				String user = text_user.getText();
+				String pswd = text_pswd.getText();
+				String confirm_pswd = text_confirm_pswd.getText();
+				String mail = text_mail.getText();
+				if(!confirm_pswd.equals(pswd)) {		//对比两次密码输入
+					JOptionPane.showMessageDialog(null, "两次密码输入不一致！","提示", JOptionPane.WARNING_MESSAGE);
+				}else if(mail==""){			//邮箱不能为空
+					JOptionPane.showMessageDialog(null, "邮箱地址不能为空！","提示", JOptionPane.WARNING_MESSAGE);
+				}else {
+					String api = "https://api.mp3.h-00.com/v1/user/regisitor?username="+user+"&password="+pswd+"&email="+mail;
+					Error err = DoPost.doPost(api);		//向服务器发送POST请求，返回error对象
+					if(err.errorCode==0) {
+						JOptionPane.showMessageDialog(null, "已发送邮件至您的邮箱！请在1个小时内完成验证！","提示", JOptionPane.WARNING_MESSAGE);
+					}else {
+						JOptionPane.showMessageDialog(null, err.errorMsg,"提示", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			}
+		});
 		Label_btn_register.setBounds(215, 327, 100, 36);
 		Label_btn_register.setText("New Label");
-		btn_listen(Label_btn_register,"REGISITOR");
+		BtnListener.btn_listen(Label_btn_register,"REGISITOR");
 
 	}
 	public void end() {

@@ -31,7 +31,7 @@ public class DoPost {
 			String str = EntityUtils.toString(response.getEntity());
 			response.close();
 			httpClient.close();
-			JSONObject jsonObject = new JSONObject(str);
+			JSONObject jsonObject = new JSONObject(str);	//实例化一个JSON对象
 			if(jsonObject.getInt("error")==0) {
 				return Error.makeErr(0, jsonObject.getString("msg"));
 			}else {
@@ -58,7 +58,7 @@ public class DoPost {
 			String str = EntityUtils.toString(response.getEntity());
 			response.close();
 			httpClient.close();
-			return new JSONObject(str);
+			return new JSONObject(str);//返回JSON对象
 			
 		} catch (JSONException | IOException e) {
 			return null;
@@ -91,6 +91,31 @@ public class DoPost {
 			}
 		} catch (JSONException | IOException e) {
 			return Error.makeErr(100,e.toString());
+		}
+	}
+
+	public static JSONObject doPostHJ(String api,String token){
+
+		try {
+			//1、创建httpClient对象
+			CloseableHttpClient httpClient = HttpClients.createDefault();
+			//2、创建post对象
+			HttpPost post = new HttpPost(api);
+			//往请求头中加入一个键值对
+			post.setHeader("Authorization",token);
+			//3、执行post请求
+			CloseableHttpResponse response = httpClient.execute(post);
+			/*
+			 * 4、HttpResponse的getEntity()方法可获取HttpEntity对象，
+			 * 该对象包装了服务器的响应内容。程序可通过该对象获取服务器的响应内容。
+			 */
+			String str = EntityUtils.toString(response.getEntity());
+			response.close();
+			httpClient.close();
+			JSONObject jsonObject = new JSONObject(str);
+			return jsonObject;
+		} catch (JSONException | IOException e) {
+			return null;
 		}
 	}
 	

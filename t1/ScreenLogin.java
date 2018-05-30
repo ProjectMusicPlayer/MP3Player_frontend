@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Button;
 
 import java.awt.HeadlessException;
+import java.io.FileNotFoundException;
 
 import javax.swing.JOptionPane;
 
@@ -69,17 +70,6 @@ public class ScreenLogin {
 		MainLogin.setBackground(SWTResourceManager.getColor(255, 204, 204));
 		MainLogin.setSize(557, 524);
 		MainLogin.setText("JMP");
-		
-		Button btnNewButton = new Button(MainLogin, SWT.NONE);
-		btnNewButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				openMainScreen("test");
-			}
-		});
-		btnNewButton.setBounds(361, 431, 61, 23);
-		btnNewButton.setText("\u767B\u5F55");
-		
 		Label Label_user = new Label(MainLogin, SWT.NONE);
 		Label_user.setBackground(SWTResourceManager.getColor(255, 204, 204));
 		Label_user.setAlignment(SWT.RIGHT);
@@ -110,27 +100,29 @@ public class ScreenLogin {
 		Label_musicplayer.setText("MusicPlayer");
 		
 		Label Label_btn_login = new Label(MainLogin, SWT.NONE);
+		//登录监听
 		Label_btn_login.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseUp(MouseEvent e) {
-				String user = text_user.getText();
+				String user = text_user.getText();	
 				String pswd = text_pswd.getText();
 				String api = "https://api.mp3.h-00.com/v1/user/token?username="+user+"&password="+pswd;
 				try {
-					org.json.JSONObject Json = DoPost.doPostJ(api);
+					org.json.JSONObject Json = DoPost.doPostJ(api);	//从服务器获取一个JSON对象对其进行解析
+					if(Json==null) {
+						JOptionPane.showMessageDialog(null,"网络错误","提示", JOptionPane.WARNING_MESSAGE);	//错误提示
+					}
 					if(Json.getInt("error")==0) {
-						String token = Json.getString("token");
+						String token = Json.getString("token");	//获取token
 						User.token = token;
 						User.username = user;
-						openMainScreen(user);
+						openMainScreen(user);	//传入用户名
 					}else {
-						JOptionPane.showMessageDialog(null, Json.getString("msg"),"提示", JOptionPane.WARNING_MESSAGE);
+						JOptionPane.showMessageDialog(null, Json.getString("msg"),"提示", JOptionPane.WARNING_MESSAGE);	//错误提示
 					}
 				} catch (HeadlessException e1) {
-					// TODO 自动生成的 catch 块
 					e1.printStackTrace();
 				} catch (JSONException e1) {
-					// TODO 自动生成的 catch 块
 					e1.printStackTrace();
 				}
 			}
@@ -170,6 +162,12 @@ public class ScreenLogin {
 	}
 	
 	public void openMainScreen(String username) {
+		try {
+			DoFile.readConfig();
+		} catch (FileNotFoundException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
 		ScreenController.login(this,username);
 	}
 	

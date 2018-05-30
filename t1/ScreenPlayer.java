@@ -9,6 +9,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import test.yubei.com.app.api.DoDelete;
+import test.yubei.com.app.api.DoPost;
+import test.yubei.com.app.api.Error;
+
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,7 +24,16 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.events.MouseTrackAdapter;
+
+import java.io.IOException;
+
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JOptionPane;
+
 import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.swt.events.DragDetectListener;
+import org.eclipse.swt.events.DragDetectEvent;
 
 
 
@@ -27,7 +41,14 @@ import org.eclipse.jface.viewers.ListViewer;
 public class ScreenPlayer {
 	protected Shell MainPlayer;
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
-
+	public static List sp;
+	public static boolean play_stus = true;
+	public static Display dp;
+	public static Slider sli;
+	public static void cllrc() {
+		Lyric.list.removeAll();
+	}
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -47,10 +68,15 @@ public class ScreenPlayer {
 //**/
 	/**
 	 * Open the window.
+	 * @throws LineUnavailableException 
+	 * @throws IOException 
+	 * @throws UnsupportedAudioFileException 
 	 */
-	public void open() {
+	public void open() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		Display display = Display.getDefault();
+		ScreenPlayer.dp = display;
 		createContents();
+		DoFile.readConfig();
 		MainPlayer.open();
 		MainPlayer.layout();
 		while (!MainPlayer.isDisposed()) {
@@ -62,8 +88,11 @@ public class ScreenPlayer {
 
 	/**
 	 * Create contents of the window.
+	 * @throws LineUnavailableException 
+	 * @throws IOException 
+	 * @throws UnsupportedAudioFileException 
 	 */
-	protected void createContents() {
+	protected void createContents() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 		String strdk1 = new String();
 		MainPlayer = new Shell(SWT.BORDER | SWT.CLOSE);
 		MainPlayer.setAlpha(255);
@@ -94,6 +123,15 @@ public class ScreenPlayer {
 		Menu_signout.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
+				String token = User.token;
+				String api = "https://api.mp3.h-00.com/v1/user/token?token="+token;
+				Error err = DoDelete.doDelete(api);
+				if(err.errorCode==0) {
+					end();
+					ScreenController.signout();
+				}else {
+					JOptionPane.showMessageDialog(null, err.errorMsg,"ÌבÊ¾", JOptionPane.WARNING_MESSAGE);
+				}
 			}
 		});
 		Menu_signout.setText("\u6CE8\u9500");
@@ -105,12 +143,6 @@ public class ScreenPlayer {
 		Menu_main_listen.setMenu(menu_2);
 		
 		MenuItem Menu_list = new MenuItem(menu_2, SWT.NONE);
-		Menu_list.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				ScreenController.list();
-			}
-		});
 		Menu_list.setText("\u6211\u7684\u6B4C\u5355");
 		
 		MenuItem Menu_search = new MenuItem(menu_2, SWT.NONE);
@@ -155,11 +187,12 @@ public class ScreenPlayer {
 		
 		List List_playlist = new List(MainPlayer, SWT.NONE);
 		List_playlist.setBackground(SWTResourceManager.getColor(255, 230, 230));
-		List_playlist.setItems(new String[] {"AAAA", "BBB", "CCCC", "SSSS"});
-		
+		List_playlist.setItems(new String[] {});
+		ScreenPlayer.sp = List_playlist;
 		List_playlist.setBounds(10, 64, 132, 294);
 		
 		Label Label_song = new Label(MainPlayer, SWT.NONE);
+		BtnListener.title = Label_song;
 		Label_song.setBackground(SWTResourceManager.getColor(255, 204, 204));
 		Label_song.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 14, SWT.BOLD));
 		Label_song.setAlignment(SWT.CENTER);
@@ -167,6 +200,7 @@ public class ScreenPlayer {
 		Label_song.setText("\u6B4C\u66F2\u540D");
 		
 		Label Label_singer = new Label(MainPlayer, SWT.NONE);
+		BtnListener.singer =  Label_singer;
 		Label_singer.setBackground(SWTResourceManager.getColor(255, 204, 204));
 		Label_singer.setAlignment(SWT.CENTER);
 		Label_singer.setBounds(280, 68, 109, 17);
@@ -181,44 +215,76 @@ public class ScreenPlayer {
 		lblNewLabel_4.setBounds(411, 119, -26, -18);
 		
 		Combo combo = new Combo(MainPlayer, SWT.READ_ONLY);
+		combo.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MusicPlayer.playMode = combo.getSelectionIndex();
+			}
+		});
 		combo.setForeground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
 		combo.setBackground(SWTResourceManager.getColor(255, 204, 204));
-		combo.setItems(new String[] {"\u987A\u5E8F\u64AD\u653E", "\u5355\u66F2\u5FAA\u73AF", "\u5217\u8868\u5FAA\u73AF"});
+		combo.setItems(new String[] {"\u987A\u5E8F\u64AD\u653E", "\u5355\u66F2\u5FAA\u73AF", "\u5217\u8868\u5FAA\u73AF", "\u968F\u673A\u64AD\u653E"});
 		combo.setBounds(354, 428, 88, 25);
 		formToolkit.adapt(combo);
 		formToolkit.paintBordersFor(combo);
+		combo.select(0);
 		combo.setText("\u64AD\u653E\u6A21\u5F0F");
 		
 		Label Label_btn_PLAY = new Label(MainPlayer, SWT.NONE);
 		Label_btn_PLAY.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_BACKGROUND_GRADIENT));
 		Label_btn_PLAY.setBounds(230, 415, 50, 51);
 		formToolkit.adapt(Label_btn_PLAY, true, true);
-		BtnListener.btn_listen_play(Label_btn_PLAY,"PLAY","PAUSE");
+		BtnListener.btn_listen_play(List_playlist,Label_btn_PLAY,"PLAY","PAUSE");
 		Label Label_btn_LAST = new Label(MainPlayer, SWT.NONE);
+		Label_btn_LAST.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				MusicPlayer.playLast();
+			}
+		});
 		Label_btn_LAST.setBounds(174, 418, 50, 51);
 		formToolkit.adapt(Label_btn_LAST, true, true);
 		BtnListener.btn_listen(Label_btn_LAST,"LAST");
 		Label Label_btn_NEXT = new Label(MainPlayer, SWT.NONE);
+		Label_btn_NEXT.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				MusicPlayer.playNext();
+			}
+		});
 		Label_btn_NEXT.setBounds(287, 418, 50, 51);
 		formToolkit.adapt(Label_btn_NEXT, true, true);
 		BtnListener.btn_listen(Label_btn_NEXT,"NEXT");
 		
-		ListViewer listViewer = new ListViewer(MainPlayer, SWT.NONE | SWT.V_SCROLL);
-		List List_lyrics = listViewer.getList();
-		List_lyrics.setItems(new String[] {"1111", "2222"});
+
+		List List_lyrics = new List(MainPlayer, SWT.NONE | SWT.V_SCROLL);
+		List_lyrics.setItems(new String[] {"\u6B4C\u8BCD\u9762\u677F"});
 		List_lyrics.setBackground(SWTResourceManager.getColor(255, 230, 230));
 		List_lyrics.setBounds(354, 115, 169, 243);
+		Lyric.list=List_lyrics;
 		
 		Slider slider = new Slider(MainPlayer, SWT.BORDER);
+		slider.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				MusicPlayer.moveTo(ScreenPlayer.sli.getSelection());
+			}
+		});
+		ScreenPlayer.sli = slider;
 		slider.setPageIncrement(0);
 		slider.setMaximum(255);
-		slider.setMinimum(200);
 		slider.setSelection(255);
 		slider.setForeground(SWTResourceManager.getColor(255, 204, 255));
 		slider.setBackground(SWTResourceManager.getColor(255, 204, 255));
 		slider.setBounds(10, 381, 513, 17);
 		formToolkit.adapt(slider, true, true);
 
+		Menu_list.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				ScreenController.list(List_playlist);
+			}
+		});
 	}
 	
 	public void end() {

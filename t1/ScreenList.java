@@ -12,11 +12,15 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class ScreenList {
 
 	protected Shell MainList;
 
+	public List futherScreen;
+	
 	/**
 	 * Launch the application.
 	 * @param args
@@ -25,6 +29,15 @@ public class ScreenList {
 	public static void main(String[] args) {
 		try {
 			ScreenList window = new ScreenList();
+			window.open();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public static void main(List s) {
+		try {
+			ScreenList window = new ScreenList();
+			window.futherScreen = s;
 			window.open();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,6 +82,12 @@ public class ScreenList {
 		Label_list.setText("\u6211\u7684\u66F2\u5E93");
 		
 		List List_list = new List(MainList, SWT.CLOSE);
+		List_list.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDoubleClick(MouseEvent e) {
+				MusicList.addMusicToPlayList(List_list.getSelectionIndex(),futherScreen);
+			}
+		});
 		List_list.setBackground(SWTResourceManager.getColor(255, 230, 230));
 		List_list.setBounds(124, 59, 301, 346);
 		
@@ -76,7 +95,11 @@ public class ScreenList {
 		Label_btn_return.setBounds(325, 422, 100, 36);
 		Label_btn_return.setText("New Label");
 		BtnListener.btn_listen(Label_btn_return, "RETURN");
-
+		
+		for(int i=0;i<MusicList.storege.length;i++) {
+			List_list.add(MusicList.storege[i].name+";"+MusicList.storege[i].singer);
+		}
+		
 	}
 	
 	public void end() {

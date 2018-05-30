@@ -3,11 +3,20 @@ package test.yubei.com.app.t1;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Label;
+
+import javax.swing.JOptionPane;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+
+import test.yubei.com.app.api.DoPost;
+import test.yubei.com.app.api.Error;
+
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 
 public class ScreenPswd {
 
@@ -93,6 +102,25 @@ public class ScreenPswd {
 		Label_confir_pswd.setText("\u8BF7\u786E\u8BA4\u5BC6\u7801\uFF1A");
 		
 		Label Label_btn_submit = new Label(MainPswd, SWT.NONE);
+		Label_btn_submit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseUp(MouseEvent e) {
+				String oldpswd = text_pri_pswd.getText();
+				String newpswd = text_new_pswd.getText();
+				String confirpswd = text_confir_pswd.getText();
+				if(!confirpswd.equals(newpswd)) {
+					JOptionPane.showMessageDialog(null, "两次密码输入不一致！","提示", JOptionPane.WARNING_MESSAGE);
+				}else {
+					String api = "https://api.mp3.h-00.com/v1/user/password?old="+oldpswd+"&new="+newpswd;
+					Error err = DoPost.doPostH(api,User.token);
+					if(err.errorCode==0) {
+						JOptionPane.showMessageDialog(null, "密码修改成功！","提示", JOptionPane.WARNING_MESSAGE);
+					}else {
+						JOptionPane.showMessageDialog(null, err.errorMsg,"提示", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			}
+		});
 		Label_btn_submit.setBounds(214, 320, 100, 36);
 		Label_btn_submit.setText("New Label");
 		BtnListener.btn_listen(Label_btn_submit, "SUBMIT");

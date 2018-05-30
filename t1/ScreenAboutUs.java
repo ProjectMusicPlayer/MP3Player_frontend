@@ -69,12 +69,12 @@ public class ScreenAboutUs {
 		
 		Label Label_img = new Label(MainAboutUs, SWT.NONE);
 		Label_img.setText("\u56FE\u7247");
-		Label_img.setBounds(313, 96, 179, 164);
+		Label_img.setBounds(276, 75, 216, 218);
 		
-		Label Label_intro = new Label(MainAboutUs, SWT.NONE);
-		Label_intro.setBackground(SWTResourceManager.getColor(255, 230, 230));
-		Label_intro.setBounds(29, 75, 227, 215);
-		Label_intro.setText("\u56E2\u961F\u4ECB\u7ECD");
+		Label lblxx = new Label(MainAboutUs, SWT.NONE);
+		lblxx.setBackground(SWTResourceManager.getColor(255, 230, 230));
+		lblxx.setBounds(29, 75, 227, 218);
+		lblxx.setText("\u56E2\u961F\u4ECB\u7ECD:\r\n\u5168\u6808\u5DE5\u7A0B\u5E08         \u6C88xx\r\njava\u524D\u7AEF\u5DE5\u7A0B\u5E08   \u674Exx\r\nQA                    \u9EC4xx\r\n                        \u65B9x\r\n                        \u4ED8x\r\n");
 		
 		text_suggest = new Text(MainAboutUs, SWT.BORDER);
 		text_suggest.setBackground(SWTResourceManager.getColor(255, 230, 230));
@@ -87,14 +87,9 @@ public class ScreenAboutUs {
 		Label_suggest.setText("\u8BF7\u5728\u6B64\u5199\u4E0B\u5BF9\u6211\u4EEC\u7684\u5EFA\u8BAE\uFF1A");
 		
 		Label Label_btn_submit = new Label(MainAboutUs, SWT.NONE);
-		Label_btn_submit.setBounds(287, 405, 100, 36);
+		Label_btn_submit.setBounds(392, 405, 100, 36);
 		Label_btn_submit.setText("New Label");
 		BtnListener.btn_listen(Label_btn_submit, "SUBMIT");
-		
-		Label Label_btn_return = new Label(MainAboutUs, SWT.NONE);
-		Label_btn_return.setBounds(393, 405, 100, 36);
-		Label_btn_return.setText("New Label");
-		BtnListener.btn_listen(Label_btn_return, "RETURN");
 
 	}
 
